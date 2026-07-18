@@ -71,6 +71,53 @@ def load_drivers(conn: sqlite3.Connection) -> None:
     df.to_sql("drivers",conn,if_exists="append",index=False)
     print(f"Loaded {len(df)} rows into drivers")
 
+def load_races(conn: sqlite3.Connection) -> None:
+    """Load races.csv -> races table.
+
+    Cleaning needed:
+    - date: parse to real datetime, store as ISO string (YYYY-MM-DD)
+    - drop session-timing columns (fp1/fp2/fp3/quali/sprint) not in our schema
+    """
+    df = pd.read_csv(f"{RAW_DIR}/races.csv", na_values=NULL_VALUES)
+    df = df.rename(columns={"raceId": "race_id", "circuitId": "circuit_id"})
+
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+
+    df = df[["race_id", "year", "round", "circuit_id", "name", "date"]]
+
+    df.to_sql("races", conn, if_exists="append", index=False)
+    print(f"Loaded {len(df)} rows into races")
+
+def load_results(conn: sqlite3.Connection) -> None:
+    """Load results.csv -> results table. The fact table — depends on
+    drivers, races, constructors, and status all being loaded first.
+
+    Note: position/laps/fastestLap appear as float64 in pandas (not int64)
+    purely because NaN forces an upcast from int to float. SQLite will still
+    store/query them correctly against our INTEGER schema columns.
+    """
+    df = pd.read_csv(f"{RAW_DIR}/results.csv", na_values=NULL_VALUES)
+    df = df.rename(columns={
+        "resultId": "result_id",
+        "raceId": "race_id",
+        "driverId": "driver_id",
+        "constructorId": "constructor_id",
+        "positionOrder": "position_order",
+        "fastestLap": "fastest_lap",
+        "fastestLapTime": "fastest_lap_time",
+        "fastestLapSpeed": "fastest_lap_speed",
+        "statusId": "status_id",
+    })
+
+    df = df[[
+        "result_id", "race_id", "driver_id", "constructor_id", "grid",
+        "position", "position_order", "points", "laps", "milliseconds",
+        "fastest_lap_time", "fastest_lap_speed", "status_id",
+    ]]
+
+    df.to_sql("results", conn, if_exists="append", index=False)
+    print(f"Loaded {len(df)} rows into results")
+
 if __name__ == "__main__":
     reset_database()
     conn = get_connection()
@@ -78,6 +125,8 @@ if __name__ == "__main__":
     load_constructors(conn)
     load_circuits(conn)
     load_drivers(conn)
+    load_races(conn)
+    load_results(conn)
     conn.commit()
     conn.close()
     print("connection committed and closed")
