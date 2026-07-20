@@ -3,7 +3,7 @@
 A SQL-first analytics tool built on 75 years of Formula 1 historical data — demonstrating a full pipeline from raw CSVs to a normalized relational schema to SQL analysis (joins, CTEs, window functions) to visualization.
 
 ## Architecture — star schema
-<<<<<<< HEAD
+
 ![F1 SQL Analytics schema diagram](assets/schema_diagram.svg) 
 =======
 <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
