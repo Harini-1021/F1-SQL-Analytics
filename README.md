@@ -3,13 +3,71 @@
 A SQL-first analytics tool built on 75 years of Formula 1 historical data — demonstrating a full pipeline from raw CSVs to a normalized relational schema to SQL analysis (joins, CTEs, window functions) to visualization.
 
 ## Architecture — star schema
-drivers (dimension)
-                │
-circuits ──── races ──── results (FACT) ──── constructors
-(dimension)  (dimension)                      (dimension)
-│
-status
-(dimension)
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect width="900" height="560" fill="#ffffff"/>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#666666"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" font-size="20" font-weight="bold" fill="#222222">F1 SQL Analytics — Star Schema</text>
+
+  <!-- circuits box -->
+  <rect x="40" y="90" width="150" height="60" rx="8" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="115" y="115" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">circuits</text>
+  <text x="115" y="134" text-anchor="middle" font-size="12" fill="#5b6b7a">dimension</text>
+
+  <!-- races box -->
+  <rect x="260" y="90" width="150" height="60" rx="8" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="335" y="115" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">races</text>
+  <text x="335" y="134" text-anchor="middle" font-size="12" fill="#5b6b7a">dimension</text>
+
+  <!-- drivers box -->
+  <rect x="40" y="250" width="150" height="60" rx="8" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="115" y="275" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">drivers</text>
+  <text x="115" y="294" text-anchor="middle" font-size="12" fill="#5b6b7a">dimension</text>
+
+  <!-- constructors box -->
+  <rect x="710" y="250" width="150" height="60" rx="8" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="785" y="275" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">constructors</text>
+  <text x="785" y="294" text-anchor="middle" font-size="12" fill="#5b6b7a">dimension</text>
+
+  <!-- status box -->
+  <rect x="375" y="440" width="150" height="60" rx="8" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="450" y="465" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">status</text>
+  <text x="450" y="484" text-anchor="middle" font-size="12" fill="#5b6b7a">dimension</text>
+
+  <!-- results FACT box (center) -->
+  <rect x="345" y="240" width="210" height="80" rx="10" fill="#4c72b0" stroke="#2c4a70" stroke-width="2.5"/>
+  <text x="450" y="272" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">results</text>
+  <text x="450" y="294" text-anchor="middle" font-size="12" fill="#dbe6f5">FACT TABLE — one row per</text>
+  <text x="450" y="309" text-anchor="middle" font-size="12" fill="#dbe6f5">driver, per race</text>
+
+  <!-- Arrow: circuits -> races -->
+  <line x1="190" y1="120" x2="255" y2="120" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arrow: races -> results -->
+  <path d="M335,150 L335,220 Q335,240 355,247" fill="none" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arrow: drivers -> results -->
+  <line x1="190" y1="280" x2="340" y2="280" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arrow: constructors -> results -->
+  <line x1="710" y1="280" x2="560" y2="280" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arrow: status -> results -->
+  <path d="M450,440 L450,325" fill="none" stroke="#666666" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <rect x="40" y="500" width="16" height="16" fill="#eef2f7" stroke="#5b7ba6" stroke-width="2"/>
+  <text x="64" y="513" font-size="12" fill="#444444">Dimension table (describes an entity)</text>
+  <rect x="330" y="500" width="16" height="16" fill="#4c72b0" stroke="#2c4a70" stroke-width="2"/>
+  <text x="354" y="513" font-size="12" fill="#444444">Fact table (records an event)</text>
+</svg>
 
 `results` is the fact table — one row per driver, per race. Everything else describes an entity (who, where, why), not an event. This shape is the same pattern used in real analytics warehouses (a sales fact table surrounded by customer/product/store dimensions) — F1 results stand in for any general operational analytics problem.
 
