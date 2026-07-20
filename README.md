@@ -3,13 +3,7 @@
 A SQL-first analytics tool built on 75 years of Formula 1 historical data — demonstrating a full pipeline from raw CSVs to a normalized relational schema to SQL analysis (joins, CTEs, window functions) to visualization.
 
 ## Architecture — star schema
-drivers (dimension)
-                │
-circuits ──── races ──── results (FACT) ──── constructors
-(dimension)  (dimension)                      (dimension)
-│
-status
-(dimension)
+![F1 SQL Analytics schema diagram](assets/schema_diagram.svg) 
 
 `results` is the fact table — one row per driver, per race. Everything else describes an entity (who, where, why), not an event. This shape is the same pattern used in real analytics warehouses (a sales fact table surrounded by customer/product/store dimensions) — F1 results stand in for any general operational analytics problem.
 
